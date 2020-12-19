@@ -45,7 +45,6 @@ export class AppController {
     //   .catch(() => res.status(500).send('Failed to upload image into AWS S3!'));
     // console.log('Image: ', image);
     // console.log('Req: ', req.buffer);
-    // console.log('aws: ', awsS3);
 
     // const length = 0;
     // const chunks = [];
