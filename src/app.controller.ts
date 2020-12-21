@@ -1,12 +1,22 @@
-import { Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AppService } from './app.service';
-import { ImageS3Service } from './image-s3/image-s3.service';
+// import { ImageS3Service } from './image-s3/image-s3.service';
+import { AmazonS3FileInterceptor } from 'nestjs-multer-extended';
+import { multerOptions } from './config/multer.config';
 
 @Controller()
 export class AppController {
   constructor(
-    private readonly appService: AppService,
-    private readonly imageS3Service: ImageS3Service,
+    private readonly appService: AppService, // private readonly imageS3Service: ImageS3Service,
   ) {}
 
   @Get()
@@ -15,16 +25,15 @@ export class AppController {
   }
 
   @Post(':filename')
-  async imageUpload(@Param() params, @Res() res, @Req() req) {
+  @UseInterceptors(AmazonS3FileInterceptor('image', multerOptions))
+  async imageUpload(
+    @UploadedFile() image,
+    @Param() params,
+    @Res() res,
+    @Req() req,
+  ) {
     const { filename } = params;
 
-    this.imageS3Service
-      .uploadImage(req, filename)
-      .then((fname) => {
-        res.send(fname);
-      })
-      .catch((e) => {
-        res.status(500).send(e.toString());
-      });
+    console.log(image);
   }
 }
